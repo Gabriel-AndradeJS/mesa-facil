@@ -1,0 +1,10 @@
+services:
+  postgres:
+    image: postgres:13
+    container_name: quiosque_db
+    environment:
+      POSTGRES_DB: mesa_facil
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
