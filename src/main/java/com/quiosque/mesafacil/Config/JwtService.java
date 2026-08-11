@@ -1,5 +1,7 @@
 package com.quiosque.mesafacil.Config;
 
+import com.quiosque.mesafacil.User.DTOs.CreateUserDTO;
+import com.quiosque.mesafacil.User.Entity.UserEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -18,9 +20,10 @@ public class JwtService {
 
     private final SecretKey key = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
 
-    public String createToken(String email) {
+    public String createToken(UserEntity user) {
         return Jwts.builder()
-                .setSubject(email)
+                .setSubject(user.getEmail())
+                .claim("role", user.getRole())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_MS))
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -29,6 +32,10 @@ public class JwtService {
 
     public String extractSubject(String token) {
         return extractClaims(token).getSubject();
+    }
+
+    public String extractClaim(String token, String claimKey) {
+        return extractClaims(token).get("Role", String.class);
     }
 
     public boolean isTokenValid(String token) {
