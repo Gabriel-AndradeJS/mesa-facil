@@ -2,6 +2,7 @@ package com.quiosque.mesafacil.User.Entity;
 
 import com.quiosque.mesafacil.User.enums.UserRole;
 import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.*;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
@@ -13,6 +14,11 @@ import java.util.List;
 
 @Entity
 @Table(name = "users")
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserEntity implements UserDetails {
 
     @Id
@@ -45,12 +51,12 @@ public class UserEntity implements UserDetails {
 
     @Override
     public @Nullable String getPassword() {
-        return "";
+        return password;
     }
 
     @Override
     public String getUsername() {
-        return "";
+        return email;
     }
 
     @Override
@@ -72,4 +78,5 @@ public class UserEntity implements UserDetails {
     public boolean isEnabled() {
         return UserDetails.super.isEnabled();
     }
+
 }
