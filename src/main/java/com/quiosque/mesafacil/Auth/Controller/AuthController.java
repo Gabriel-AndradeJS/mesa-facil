@@ -1,10 +1,9 @@
-package com.quiosque.mesafacil.Auth;
+package com.quiosque.mesafacil.Auth.Controller;
 
 import com.quiosque.mesafacil.Auth.DTO.LoginDTO;
 import com.quiosque.mesafacil.Auth.DTO.ResponseLogin;
 import com.quiosque.mesafacil.Auth.Service.LoginService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
