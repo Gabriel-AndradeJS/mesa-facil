@@ -1,6 +1,8 @@
 package com.quiosque.mesafacil.Config;
 
 import com.quiosque.mesafacil.User.Repository.UserRepository;
+import com.quiosque.mesafacil.User.enums.UserRole;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,10 +30,24 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> writeJsonError(
+                                response,
+                                HttpServletResponse.SC_UNAUTHORIZED,
+                                "Você precisa estar autenticado",
+                                request.getRequestURI()
+                        ))
+                        .accessDeniedHandler((request, response, accessDeniedException) -> writeJsonError(
+                                response,
+                                HttpServletResponse.SC_FORBIDDEN,
+                                "Você não tem permissão para acessar este recurso",
+                                request.getRequestURI()
+                        ))
+                )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/api/auth").permitAll()
-                        .requestMatchers("/api/user").permitAll()
+                        .requestMatchers("/api/user/**").hasRole(UserRole.ADMIN.name())
                         .anyRequest().authenticated()
                 )
                 .build();
@@ -51,5 +67,14 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    private void writeJsonError(HttpServletResponse response, int status, String message, String path) throws java.io.IOException {
+        response.setStatus(status);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(
+                "{\"status\":" + status + ",\"message\":\"" + message + "\",\"path\":\"" + path + "\"}"
+        );
     }
 }
