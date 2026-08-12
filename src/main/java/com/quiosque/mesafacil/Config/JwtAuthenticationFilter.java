@@ -42,7 +42,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (JwtException ex) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT inválido");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                response.getWriter().write(
+                        "{\"status\":401,\"message\":\"JWT inválido\",\"path\":\"" + request.getRequestURI() + "\"}"
+                );
                 return;
             }
         }
