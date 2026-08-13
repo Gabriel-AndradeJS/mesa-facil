@@ -1,10 +1,13 @@
 package com.quiosque.mesafacil.User.Service;
 
+import com.quiosque.mesafacil.Config.JwtService;
 import com.quiosque.mesafacil.User.DTOs.CreateUserDTO;
 import com.quiosque.mesafacil.User.DTOs.ResponseUserDTO;
+import com.quiosque.mesafacil.User.DTOs.WaiterDTO;
 import com.quiosque.mesafacil.User.Entity.UserEntity;
 import com.quiosque.mesafacil.User.Mapper.UserMapper;
 import com.quiosque.mesafacil.User.Repository.UserRepository;
+import com.quiosque.mesafacil.User.Repository.WaiterRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +22,8 @@ public class UserService {
 
     private UserMapper mapper;
     private final UserRepository userRepository;
+    private final WaiterRepository waiterRepository;
+    private final JwtService jwtService;
 
     public ResponseEntity<ResponseUserDTO> createUser(CreateUserDTO dto){
         UserEntity user = UserEntity.builder()
@@ -35,6 +40,24 @@ public class UserService {
     public List<ResponseUserDTO> getUsers(){
         return userRepository.findAll().stream()
                 .map(mapper::EntityToResponse)
+                .toList();
+    }
+
+    public List<WaiterDTO> getRoles() {
+        return waiterRepository.findAll().stream()
+                .map(mapper::WaiterEntityToWaiter)
+                .toList();
+    }
+
+    public  List<WaiterDTO> getWaiters(String token){
+        String tokenString = token.replace("Bearer ", "");
+        String emailAdmin = jwtService.extractSubject(tokenString);
+
+        UserEntity adminUser = userRepository.findByEmail(emailAdmin)
+                .orElseThrow(() -> new RuntimeException("Admin not found"));
+
+        return waiterRepository.findAllByAdminId(adminUser.getId()).stream()
+                .map(mapper::WaiterEntityToWaiter)
                 .toList();
     }
 }
