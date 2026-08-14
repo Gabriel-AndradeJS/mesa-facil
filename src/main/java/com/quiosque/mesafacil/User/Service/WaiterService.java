@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class WaiterService {
 
@@ -39,10 +41,10 @@ public class WaiterService {
 
     public ResponseEntity<WaiterDTO> createWaiter(CreateWaiterDTO dto, String admin) {
         String token = admin.replace("Bearer ", "");
-        String emailAdmin = jwtService.extractSubject(token);
+        Integer id = jwtService.extractClaimId(token, "id");
 
-        UserEntity adminUser = userRepository.findByEmail(emailAdmin)
-                .orElseThrow(() -> new RuntimeException("Admin not found"));
+        UserEntity adminUser = userRepository.findById(id.longValue())
+                .orElseThrow(() -> new RuntimeException("Admin user not found"));
 
         UserEntity waiterUser = new UserEntity();
 
