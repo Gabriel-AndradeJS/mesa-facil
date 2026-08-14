@@ -23,6 +23,7 @@ public class JwtService {
     public String createToken(UserEntity user) {
         return Jwts.builder()
                 .setSubject(user.getEmail())
+                .claim("id", user.getId())
                 .claim("role", user.getRole().name())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_MS))
@@ -36,6 +37,10 @@ public class JwtService {
 
     public String extractClaim(String token, String claimKey) {
         return extractClaims(token).get(claimKey, String.class);
+    }
+
+    public Integer extractClaimId(String token, String claimKey) {
+        return extractClaims(token).get(claimKey, Integer.class);
     }
 
     public boolean isTokenValid(String token) {
