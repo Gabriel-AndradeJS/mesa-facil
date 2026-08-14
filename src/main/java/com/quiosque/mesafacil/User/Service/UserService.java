@@ -43,18 +43,12 @@ public class UserService {
                 .toList();
     }
 
-    public List<WaiterDTO> getRoles() {
-        return waiterRepository.findAll().stream()
-                .map(mapper::WaiterEntityToWaiter)
-                .toList();
-    }
-
     public  List<WaiterDTO> getWaiters(String token){
         String tokenString = token.replace("Bearer ", "");
-        String emailAdmin = jwtService.extractSubject(tokenString);
+        Integer id = jwtService.extractClaimId(tokenString, "id");
 
-        UserEntity adminUser = userRepository.findByEmail(emailAdmin)
-                .orElseThrow(() -> new RuntimeException("Admin not found"));
+        UserEntity adminUser = userRepository.findById(id.longValue())
+                .orElseThrow(() -> new RuntimeException("Admin user not found"));
 
         return waiterRepository.findAllByAdminId(adminUser.getId()).stream()
                 .map(mapper::WaiterEntityToWaiter)
