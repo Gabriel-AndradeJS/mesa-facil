@@ -44,11 +44,6 @@ public class UserController {
         return this.userService.getWaiters(token);
     }
 
-    @GetMapping("roles")
-    public List<WaiterDTO> getRoles() {
-        return this.userService.getRoles();
-    }
-
     @PostMapping("waiters")
     public ResponseEntity<WaiterDTO> createWaiter(@Valid @RequestBody CreateWaiterDTO dto, @RequestHeader("Authorization") String token) {
         return this.waiterService.createWaiter(dto, token);
