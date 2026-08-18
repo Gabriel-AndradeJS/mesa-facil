@@ -108,7 +108,7 @@ public class ProductService {
 
         if (user.getRole() == UserRole.ADMIN) {
             List<ProductEntity> products = productRepository.findAllProduct(user.getId());
-            return products.stream().map((ProductEntity product) -> mapper.productToResponse(product)).toList();
+            return products.stream().map(mapper::productToResponse).toList();
         } else if (user.getRole() == UserRole.WAITER) {
             WaiterDTO waiterDTO =
                     waiterService.getWaiterUserById(user.getId());
