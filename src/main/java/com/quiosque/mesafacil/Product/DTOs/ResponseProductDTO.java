@@ -18,7 +18,6 @@ public class ResponseProductDTO {
     private Double price;
     private Integer quantity;
     private ProductEnum status;
-
-    private Long adminId;
+    private String WaiterName;
     private Long createdById;
 }
