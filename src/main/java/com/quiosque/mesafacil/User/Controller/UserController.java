@@ -48,4 +48,9 @@ public class UserController {
     public ResponseEntity<WaiterDTO> createWaiter(@Valid @RequestBody CreateWaiterDTO dto, @RequestHeader("Authorization") String token) {
         return this.waiterService.createWaiter(dto, token);
     }
+
+    @GetMapping("waiters/{id}")
+    public WaiterDTO getWaiterById(@PathVariable Long id) {
+        return this.waiterService.getWaiterById(id);
+    }
 }
