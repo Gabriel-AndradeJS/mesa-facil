@@ -2,10 +2,13 @@ package com.quiosque.mesafacil.Product.Controller;
 
 import com.quiosque.mesafacil.Product.DTOs.CreateProductDTO;
 import com.quiosque.mesafacil.Product.DTOs.ResponseProductDTO;
+import com.quiosque.mesafacil.Product.Entity.ProductEntity;
 import com.quiosque.mesafacil.Product.Service.ProductService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @AllArgsConstructor
 @RestController
@@ -20,7 +23,7 @@ public class ProductController {
     }
 
     @GetMapping
-    public String getProductById(@RequestHeader("Authorization") String token) {
-        return productService.getProductById(token);
+    public List<ResponseProductDTO> getAllProducts(@RequestHeader("Authorization") String token) {
+        return productService.getAllProducts(token);
     }
 }
