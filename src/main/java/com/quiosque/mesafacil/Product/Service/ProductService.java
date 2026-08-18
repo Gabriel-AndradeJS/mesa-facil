@@ -5,6 +5,7 @@ import com.quiosque.mesafacil.Product.DTOs.CreateProductDTO;
 import com.quiosque.mesafacil.Product.DTOs.ResponseProductDTO;
 import com.quiosque.mesafacil.Product.Entity.ProductEntity;
 import com.quiosque.mesafacil.Product.Repository.ProductRepository;
+import com.quiosque.mesafacil.Product.mapper.ProductMapper;
 import com.quiosque.mesafacil.User.DTOs.WaiterDTO;
 import com.quiosque.mesafacil.User.Entity.UserEntity;
 import com.quiosque.mesafacil.User.Entity.WaiterEntity;
@@ -16,6 +17,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @AllArgsConstructor
 @Service
 public class ProductService {
@@ -24,6 +28,7 @@ public class ProductService {
     private final WaiterService waiterService;
     private final UserService userService;
     private final ProductRepository productRepository;
+    private final ProductMapper mapper;
 
     @Transactional
     public ResponseEntity<ResponseProductDTO> createProduct(
@@ -88,16 +93,29 @@ public class ProductService {
         response.setDescription(savedProduct.getDescription());
         response.setStatus(savedProduct.getStatus());
         response.setQuantity(savedProduct.getQuantity());
+        response.setWaiterName(user.getName());
 
-        response.setAdminId(savedProduct.getAdmin().getId());
         response.setCreatedById(savedProduct.getCreatedBy().getId());
 
         return ResponseEntity.ok(response);
     }
 
-    public String getProductById(String token){
+    public List<ResponseProductDTO> getAllProducts(String token){
         String tokenString = token.replace("Bearer ", "");
         Integer id = jwtService.extractClaimId(tokenString, "id");
-        return "Product with ID: " + id;
+        UserEntity user = userService.getUserById(id.longValue());
+
+
+        if (user.getRole() == UserRole.ADMIN) {
+            List<ProductEntity> products = productRepository.findAllProduct(user.getId());
+            return products.stream().map((ProductEntity product) -> mapper.productToResponse(product)).toList();
+        } else if (user.getRole() == UserRole.WAITER) {
+            WaiterDTO waiterDTO =
+                    waiterService.getWaiterUserById(user.getId());
+            List<ProductEntity> products = productRepository.findAllProduct(waiterDTO.getAdminId());
+            return products.stream().map(mapper::productToResponse).toList();
+
+        }
+        return new ArrayList<>();
     }
-}
+     }
