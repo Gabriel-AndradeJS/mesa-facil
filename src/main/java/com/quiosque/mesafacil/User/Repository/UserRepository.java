@@ -9,7 +9,4 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
     Optional<UserEntity> findByEmail(String email);
-
-    @Query("SELECT u FROM UserEntity u WHERE u.role = 'WAITER'")
-    List<UserEntity> findByRole();
 }
