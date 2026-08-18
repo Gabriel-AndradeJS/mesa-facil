@@ -54,4 +54,8 @@ public class UserService {
                 .map(mapper::WaiterEntityToWaiter)
                 .toList();
     }
+
+    public UserEntity getUserById(Long id){
+        return userRepository.findById(id).orElseThrow( () -> new RuntimeException("User not found"));
+    }
 }
