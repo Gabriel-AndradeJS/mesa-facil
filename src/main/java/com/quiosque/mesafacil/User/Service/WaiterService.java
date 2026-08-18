@@ -68,4 +68,18 @@ public class WaiterService {
         WaiterDTO waiterDTO = userMapper.WaiterEntityToWaiter(savedWaiter);
         return ResponseEntity.status(HttpStatus.CREATED).body(waiterDTO);
     }
+
+    public WaiterDTO getWaiterById(Long id){
+        WaiterEntity waiter = waiterRepository.findById(id).orElseThrow( () -> new RuntimeException("Waiter not found"));
+        return userMapper.WaiterEntityToWaiter(waiter);
+    }
+
+    public WaiterDTO getWaiterUserById(Long id){
+        return userMapper.WaiterEntityToWaiter(waiterRepository.findByUserId(id));
+
+    }
+
+    public WaiterDTO getWaitersUserId(Long userId){
+        return userMapper.WaiterEntityToWaiter(waiterRepository.findByUserId(userId));
+    }
 }
