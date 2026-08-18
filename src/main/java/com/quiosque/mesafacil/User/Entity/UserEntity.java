@@ -80,4 +80,16 @@ public class UserEntity implements UserDetails {
         return UserDetails.super.isEnabled();
     }
 
+    public String toString() {
+        return "UserEntity{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", role=" + role +
+                ", createdAt=" + createdAt +
+                ", updateAt=" + updateAt +
+                '}';
+    }
+
 }
