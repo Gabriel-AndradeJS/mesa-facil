@@ -21,7 +21,7 @@ public interface UserMapper {
      @Mapping(target = "accountNonLocked", expression = "java(user.isAccountNonLocked())")
      @Mapping(target = "credentialsNonExpired", expression = "java(user.isCredentialsNonExpired())")
      @Mapping(target = "enabled", expression = "java(user.isEnabled())")
-     @Mapping(target = "authorities", expression = "java(new com.quiosque.mesafacil.User.DTOs.AuthoritiesDTO(user.getAuthorities().stream().findFirst().map(a -> a.getAuthority()).orElse(null)))")
+     @Mapping(target = "authorities", expression = "java(new com.quiosque.mesafacil.user.dto.AuthoritiesDTO(user.getAuthorities().stream().findFirst().map(a -> a.getAuthority()).orElse(null)))")
      WaiterDTO UserEntityToWaiter(UserEntity user);
 
      @Mapping(target = "name", source = "user.name")
@@ -34,7 +34,7 @@ public interface UserMapper {
      @Mapping(target = "accountNonLocked", expression = "java(waiter.getUser().isAccountNonLocked())")
      @Mapping(target = "credentialsNonExpired", expression = "java(waiter.getUser().isCredentialsNonExpired())")
      @Mapping(target = "enabled", expression = "java(waiter.getUser().isEnabled())")
-     @Mapping(target = "authorities", expression = "java(new com.quiosque.mesafacil.User.DTOs.AuthoritiesDTO(waiter.getUser().getAuthorities().stream().findFirst().map(a -> a.getAuthority()).orElse(null)))")
+     @Mapping(target = "authorities", expression = "java(new com.quiosque.mesafacil.user.dto.AuthoritiesDTO(waiter.getUser().getAuthorities().stream().findFirst().map(a -> a.getAuthority()).orElse(null)))")
      WaiterDTO WaiterEntityToWaiter(WaiterEntity waiter);
 
 }
