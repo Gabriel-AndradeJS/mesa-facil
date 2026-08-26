@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @AllArgsConstructor
 @RestController
 @RequestMapping("api/mesa")
@@ -15,8 +17,8 @@ public class MesaController {
     private final MesaService mesaService;
 
     @GetMapping
-    public String getMesa() {
-        return "Mesa controller";
+    public List<ResponseMesaDTO> getMesa() {
+        return mesaService.getAllMesa();
     }
 
     @PostMapping
