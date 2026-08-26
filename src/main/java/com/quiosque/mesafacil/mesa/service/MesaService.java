@@ -16,6 +16,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @AllArgsConstructor
 @Service
 public class MesaService {
@@ -32,22 +34,26 @@ public class MesaService {
         Integer userId = jwtService.extractClaimId(tokenUser, "id");
         MesaEntity mesa = new MesaEntity();
 
-        WaiterDTO waiterDTO =
-                waiterService.getWaiterUserById(userId.longValue());
+        UserEntity user = userRepository.findById(userId.longValue())
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
+        mesa.setCreatedBy(user);
 
-        if (waiterDTO != null) {
-            UserEntity user = userRepository.findById(userId.longValue())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-            if (user.getRole() == UserRole.WAITER) {
-                UserEntity adminId = userRepository.findById(waiterDTO.getAdminId())
-                        .orElseThrow(() -> new RuntimeException("Admin not found"));
-                mesa.setAdmin(adminId);
-                mesa.setCreatedBy(user);
-            } else {
-                mesa.setCreatedBy(user);
-                mesa.setAdmin(user);
+        if (user.getRole() == UserRole.WAITER) {
+            WaiterDTO waiterDTO = waiterService.getWaiterUserById(user.getId());
+
+            if (waiterDTO == null) {
+                return ResponseEntity.badRequest().build();
             }
+
+            UserEntity admin = userRepository.findById(waiterDTO.getAdminId())
+                    .orElseThrow(() -> new RuntimeException("Admin not found"));
+
+            mesa.setAdmin(admin);
+        } else if (user.getRole() == UserRole.ADMIN) {
+            mesa.setAdmin(user);
+        } else {
+            return ResponseEntity.badRequest().build();
         }
 
         mesa.setNumber(createMesaDTO.getNumber());
@@ -57,5 +63,9 @@ public class MesaService {
         mesa = mesaRepository.save(mesa);
 
         return ResponseEntity.ok(mesaMapper.entityToResponse(mesa));
+    }
+
+    public List<ResponseMesaDTO> getAllMesa(){
+        return mesaRepository.findAll().stream().map(mesaMapper::entityToResponse).toList();
     }
 }
