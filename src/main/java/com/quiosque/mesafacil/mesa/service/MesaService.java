@@ -2,6 +2,7 @@ package com.quiosque.mesafacil.mesa.service;
 
 import com.quiosque.mesafacil.configs.JwtService;
 import com.quiosque.mesafacil.mesa.entity.MesaEntity;
+import com.quiosque.mesafacil.mesa.enums.Status;
 import com.quiosque.mesafacil.mesa.repository.MesaRepository;
 import com.quiosque.mesafacil.mesa.dtos.CreateMesaDTO;
 import com.quiosque.mesafacil.mesa.dtos.ResponseMesaDTO;
@@ -33,6 +34,16 @@ public class MesaService {
         String tokenUser = token.substring(7);
         Integer userId = jwtService.extractClaimId(tokenUser, "id");
         MesaEntity mesa = new MesaEntity();
+
+        MesaEntity mesaExists = mesaRepository.findByNumber(createMesaDTO.getNumber());
+
+
+        if (mesaExists != null && mesaExists.getStatus().equals(Status.ABERTO)) {
+            throw new RuntimeException(
+                    "Já existe uma mesa " + createMesaDTO.getNumber() + " aberta"
+            );
+        }
+
 
         UserEntity user = userRepository.findById(userId.longValue())
                 .orElseThrow(() -> new RuntimeException("User not found"));
