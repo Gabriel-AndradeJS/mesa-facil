@@ -47,7 +47,7 @@ public class ProductEntity {
 
     //@ManyToOne(fetch = FetchType.LAZY, optional = false)
     //@JoinColumn(name = "mesa_id", nullable = false)
-    //private MesaEntity mesaId;
+    //private TableEntity mesaId;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
