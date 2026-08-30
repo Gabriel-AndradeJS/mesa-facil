@@ -99,10 +99,8 @@ public class ProductService {
         return ResponseEntity.ok(response);
     }
 
-    public List<ResponseProductDTO> getAllProducts(String token){
-        String tokenString = token.replace("Bearer ", "");
-        Integer id = jwtService.extractClaimId(tokenString, "id");
-        UserEntity user = userService.getUserById(id.longValue());
+    public List<ResponseProductDTO> getAllProducts(Long userId){
+        UserEntity user = userService.getUserById(userId);
 
 
         if (user.getRole() == UserRole.ADMIN) {
