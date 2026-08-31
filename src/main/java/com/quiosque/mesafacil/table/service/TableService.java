@@ -30,9 +30,7 @@ public class TableService {
     private final UserRepository userRepository;
 
     @Transactional
-    public ResponseEntity<ResponseTableDTO> createTable(CreateTableDTO createTableDTO, String token) {
-        String tokenUser = token.substring(7);
-        Integer userId = jwtService.extractClaimId(tokenUser, "id");
+    public ResponseEntity<ResponseTableDTO> createTable(CreateTableDTO createTableDTO, Long userId) {
         TableEntity mesa = new TableEntity();
 
         TableEntity mesaExists = mesaRepository.findByNumber(createTableDTO.getNumber());
@@ -45,7 +43,7 @@ public class TableService {
         }
 
 
-        UserEntity user = userRepository.findById(userId.longValue())
+        UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         mesa.setCreatedBy(user);
