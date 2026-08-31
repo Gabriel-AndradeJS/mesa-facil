@@ -4,10 +4,12 @@ import com.quiosque.mesafacil.user.dto.CreateUserDTO;
 import com.quiosque.mesafacil.user.dto.CreateWaiterDTO;
 import com.quiosque.mesafacil.user.dto.ResponseUserDTO;
 import com.quiosque.mesafacil.user.dto.WaiterDTO;
+import com.quiosque.mesafacil.user.entity.UserEntity;
 import com.quiosque.mesafacil.user.service.UserService;
 import com.quiosque.mesafacil.user.service.WaiterService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,13 +42,13 @@ public class UserController {
     }
 
     @GetMapping("waiters")
-    public List<WaiterDTO> getWaiters(@RequestHeader("Authorization") String token) {
-        return this.userService.getWaiters(token);
+    public List<WaiterDTO> getWaiters(@CurrentSecurityContext(expression = "authentication.principal") UserEntity user) {
+        return this.userService.getWaiters(user.getId());
     }
 
     @PostMapping("waiters")
-    public ResponseEntity<WaiterDTO> createWaiter(@Valid @RequestBody CreateWaiterDTO dto, @RequestHeader("Authorization") String token) {
-        return this.waiterService.createWaiter(dto, token);
+    public ResponseEntity<WaiterDTO> createWaiter(@Valid @RequestBody CreateWaiterDTO dto, @CurrentSecurityContext(expression = "authentication.principal") UserEntity user) {
+        return this.waiterService.createWaiter(dto, user.getId());
     }
 
     @GetMapping("waiters/{id}")
