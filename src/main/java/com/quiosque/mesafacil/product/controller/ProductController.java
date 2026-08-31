@@ -19,8 +19,8 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping
-    public ResponseEntity<ResponseProductDTO> createProduct(@RequestBody CreateProductDTO dto, @RequestHeader("Authorization") String token) {
-        return productService.createProduct(dto, token);
+    public ResponseEntity<ResponseProductDTO> createProduct(@RequestBody CreateProductDTO dto, @CurrentSecurityContext(expression = "authentication.principal") UserEntity user) {
+        return productService.createProduct(dto, user.getId());
     }
 
     @GetMapping
