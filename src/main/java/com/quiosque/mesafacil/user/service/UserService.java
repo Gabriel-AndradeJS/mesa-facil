@@ -43,11 +43,8 @@ public class UserService {
                 .toList();
     }
 
-    public  List<WaiterDTO> getWaiters(String token){
-        String tokenString = token.replace("Bearer ", "");
-        Integer id = jwtService.extractClaimId(tokenString, "id");
-
-        UserEntity adminUser = userRepository.findById(id.longValue())
+    public  List<WaiterDTO> getWaiters(Long id){
+        UserEntity adminUser = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Admin user not found"));
 
         return waiterRepository.findAllByAdminId(adminUser.getId()).stream()
