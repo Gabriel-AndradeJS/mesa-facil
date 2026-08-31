@@ -3,8 +3,10 @@ package com.quiosque.mesafacil.table.controller;
 import com.quiosque.mesafacil.table.service.TableService;
 import com.quiosque.mesafacil.table.dtos.CreateTableDTO;
 import com.quiosque.mesafacil.table.dtos.ResponseTableDTO;
+import com.quiosque.mesafacil.user.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,7 +24,7 @@ public class TableController {
     }
 
     @PostMapping
-    public ResponseEntity<ResponseTableDTO> postTable(@RequestBody CreateTableDTO mesas, @RequestHeader("Authorization") String token) {
-        return mesaService.createTable(mesas, token);
+    public ResponseEntity<ResponseTableDTO> postTable(@RequestBody CreateTableDTO mesas, @CurrentSecurityContext(expression = "authentication.principal") UserEntity user) {
+        return mesaService.createTable(mesas, user.getId());
     }
 }
