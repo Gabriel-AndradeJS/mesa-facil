@@ -37,11 +37,8 @@ public class WaiterService {
         this.jwtService = jwtService;
     }
 
-    public ResponseEntity<WaiterDTO> createWaiter(CreateWaiterDTO dto, String admin) {
-        String token = admin.replace("Bearer ", "");
-        Integer id = jwtService.extractClaimId(token, "id");
-
-        UserEntity adminUser = userRepository.findById(id.longValue())
+    public ResponseEntity<WaiterDTO> createWaiter(CreateWaiterDTO dto, Long id) {
+        UserEntity adminUser = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Admin user not found"));
 
         UserEntity waiterUser = new UserEntity();
