@@ -32,11 +32,7 @@ public class ProductService {
     @Transactional
     public ResponseEntity<ResponseProductDTO> createProduct(
             CreateProductDTO createProductDTO,
-            String token) {
-
-        String tokenString = token.replace("Bearer ", "");
-
-        Long userId = jwtService.extractClaimId(tokenString, "id").longValue();
+            Long userId) {
 
         UserEntity user = userService.getUserById(userId);
 
