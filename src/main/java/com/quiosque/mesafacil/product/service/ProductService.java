@@ -120,4 +120,10 @@ public class ProductService {
     public void deleteAll(){
         productRepository.deleteAll();
     }
-     }
+
+    public  List<ResponseProductDTO> getProductsByTableId(Long tableId){
+        List<ProductEntity> products = productRepository.findAllByMesaId(tableId);
+        return products.stream().map(mapper::productToResponse).toList();
+    }
+
+}
