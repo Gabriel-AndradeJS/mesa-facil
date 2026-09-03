@@ -3,6 +3,7 @@ package com.quiosque.mesafacil.configs;
 import com.quiosque.mesafacil.user.repository.UserRepository;
 import com.quiosque.mesafacil.user.enums.UserRole;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.DispatcherType;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,6 +45,7 @@ public class SecurityConfig {
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authz -> authz
+                        .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                         .requestMatchers("/api/auth").permitAll()
                         .requestMatchers("/api/user/**").hasRole(UserRole.ADMIN.name())
                         .anyRequest().authenticated()
