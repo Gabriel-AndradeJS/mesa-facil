@@ -29,4 +29,9 @@ public class ProductController {
     ) {
         return productService.getAllProducts(user.getId());
     }
+
+    @DeleteMapping
+    public void deleteProduct() {
+        productService.deleteAll();
+    }
 }
