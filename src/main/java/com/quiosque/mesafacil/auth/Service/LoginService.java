@@ -25,9 +25,6 @@ public class LoginService {
 
 
     public ResponseLogin login(LoginDTO loginDTO) {
-        UserEntity user = userRepository.findByEmail(loginDTO.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
         try {
            authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -40,6 +37,9 @@ public class LoginService {
             logger.warn("Authentication failed for {}: {}", loginDTO.getEmail(), ex.getMessage());
             throw ex;
         }
+
+        UserEntity user = userRepository.findByEmail(loginDTO.getEmail())
+                .orElseThrow(() -> new IllegalStateException("Usuário autenticado não encontrado"));
 
         String token = jwtService.createToken(user);
         return new ResponseLogin(token);
