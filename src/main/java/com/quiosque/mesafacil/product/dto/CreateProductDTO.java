@@ -19,4 +19,5 @@ public class CreateProductDTO {
     private ProductEnum status;
     private Long waiterId;
     private Long adminId;
+    private Long tableId;
 }
