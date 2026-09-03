@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Service
 public class WaiterService {
@@ -42,7 +43,7 @@ public class WaiterService {
 
     public ResponseEntity<WaiterDTO> createWaiter(CreateWaiterDTO dto, Long id) {
         UserEntity adminUser = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Admin user not found"));
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Administrador não encontrado"));
 
         UserEntity waiterUser = new UserEntity();
 
@@ -68,7 +69,8 @@ public class WaiterService {
     }
 
     public WaiterDTO getWaiterById(Long id){
-        WaiterEntity waiter = waiterRepository.findById(id).orElseThrow( () -> new RuntimeException("Waiter not found"));
+        WaiterEntity waiter = waiterRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(NOT_FOUND, "Waiter não encontrado"));
         return userMapper.WaiterEntityToWaiter(waiter);
     }
 
