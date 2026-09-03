@@ -19,8 +19,9 @@ public class TableController {
     private final TableService mesaService;
 
     @GetMapping
-    public List<ResponseTableDTO> getTable() {
-        return mesaService.getAllTable();
+    public List<ResponseTableDTO> getTable(
+            @CurrentSecurityContext(expression = "authentication.principal") UserEntity user) {
+        return mesaService.getAllTable(user.getId());
     }
 
     @PostMapping
