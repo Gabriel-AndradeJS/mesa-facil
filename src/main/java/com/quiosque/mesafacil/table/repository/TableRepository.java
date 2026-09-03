@@ -4,10 +4,14 @@ import com.quiosque.mesafacil.table.entity.TableEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
+import java.util.List;
 
 public interface TableRepository extends JpaRepository<TableEntity, Long> {
 
-    TableEntity findByNumber(Integer number);
+    Optional<TableEntity> findByNumberAndAdminId(Integer number, Long adminId);
 
-    Optional<TableEntity> findById(Long id);
+    List<TableEntity> findAllByAdminId(Long adminId);
+
+    Optional<TableEntity> findByIdAndAdminId(Long id, Long adminId);
+
 }
