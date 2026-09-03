@@ -16,13 +16,13 @@ public class ProductMapper {
         response.setPrice(product.getPrice());
         response.setQuantity(product.getQuantity());
         response.setStatus(product.getStatus());
+        response.setTableNumber(product.getMesaId().getNumber());
+        response.setTitular(product.getMesaId().getTitular());
 
         if (product.getCreatedBy() != null) {
             response.setWaiterName(product.getCreatedBy().getName());
-            response.setCreatedById(product.getCreatedBy().getId());
         } else if (product.getAdmin() != null) {
             response.setWaiterName(product.getAdmin().getName());
-            response.setCreatedById(product.getAdmin().getId());
         }
 
         return response;
