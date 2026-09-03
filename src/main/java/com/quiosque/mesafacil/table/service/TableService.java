@@ -33,7 +33,7 @@ public class TableService {
         TableEntity mesa = new TableEntity();
 
         UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Usuário não encontrado"));
 
         UserEntity admin = waiterService.getAdminForUser(user);
         TableEntity mesaExists = mesaRepository
