@@ -1,6 +1,5 @@
 package com.quiosque.mesafacil.product.service;
 
-import com.quiosque.mesafacil.configs.JwtService;
 import com.quiosque.mesafacil.product.dto.CreateProductDTO;
 import com.quiosque.mesafacil.product.dto.ResponseProductDTO;
 import com.quiosque.mesafacil.product.entity.ProductEntity;
@@ -37,7 +36,7 @@ public class ProductService {
             Long userId) {
 
         UserEntity user = userService.getUserById(userId);
-        TableEntity table = tableService.getTableById(createProductDTO.getTableId());
+        TableEntity table = tableService.getTableById(createProductDTO.getTableId(), userId);
 
         if (user == null) {
             return ResponseEntity.badRequest().build();
@@ -117,12 +116,18 @@ public class ProductService {
         return new ArrayList<>();
     }
 
-    public void deleteAll(){
-        productRepository.deleteAll();
+    @Transactional
+    public void deleteAll(Long userId){
+        UserEntity user = userService.getUserById(userId);
+        Long adminId = waiterService.getAdminForUser(user).getId();
+        productRepository.deleteAllByAdminId(adminId);
     }
 
-    public  List<ResponseProductDTO> getProductsByTableId(Long tableId){
-        List<ProductEntity> products = productRepository.findAllByMesaId(tableId);
+    public List<ResponseProductDTO> getProductsByTableId(Long tableId, Long userId){
+        UserEntity user = userService.getUserById(userId);
+        Long adminId = waiterService.getAdminForUser(user).getId();
+        tableService.getTableById(tableId, userId);
+        List<ProductEntity> products = productRepository.findAllByMesaIdIdAndAdminId(tableId, adminId);
         return products.stream().map(mapper::productToResponse).toList();
     }
 
