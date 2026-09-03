@@ -6,6 +6,8 @@ import com.quiosque.mesafacil.product.dto.ResponseProductDTO;
 import com.quiosque.mesafacil.product.entity.ProductEntity;
 import com.quiosque.mesafacil.product.repository.ProductRepository;
 import com.quiosque.mesafacil.product.mapper.ProductMapper;
+import com.quiosque.mesafacil.table.entity.TableEntity;
+import com.quiosque.mesafacil.table.service.TableService;
 import com.quiosque.mesafacil.user.dto.WaiterDTO;
 import com.quiosque.mesafacil.user.entity.UserEntity;
 import com.quiosque.mesafacil.user.service.UserService;
@@ -23,11 +25,11 @@ import java.util.List;
 @Service
 public class ProductService {
 
-    private final JwtService jwtService;
     private final WaiterService waiterService;
     private final UserService userService;
     private final ProductRepository productRepository;
     private final ProductMapper mapper;
+    private final TableService tableService;
 
     @Transactional
     public ResponseEntity<ResponseProductDTO> createProduct(
@@ -35,6 +37,7 @@ public class ProductService {
             Long userId) {
 
         UserEntity user = userService.getUserById(userId);
+        TableEntity table = tableService.getTableById(createProductDTO.getTableId());
 
         if (user == null) {
             return ResponseEntity.badRequest().build();
@@ -47,6 +50,7 @@ public class ProductService {
         product.setDescription(createProductDTO.getDescription());
         product.setStatus(createProductDTO.getStatus());
         product.setQuantity(createProductDTO.getQuantity());
+        product.setMesaId(table);
 
         product.setCreatedBy(user);
 
@@ -89,8 +93,9 @@ public class ProductService {
         response.setStatus(savedProduct.getStatus());
         response.setQuantity(savedProduct.getQuantity());
         response.setWaiterName(user.getName());
+        response.setTableNumber(savedProduct.getMesaId().getNumber());
+        response.setTitular(savedProduct.getMesaId().getTitular());
 
-        response.setCreatedById(savedProduct.getCreatedBy().getId());
 
         return ResponseEntity.ok(response);
     }
@@ -110,5 +115,9 @@ public class ProductService {
 
         }
         return new ArrayList<>();
+    }
+
+    public void deleteAll(){
+        productRepository.deleteAll();
     }
      }
