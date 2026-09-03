@@ -81,9 +81,6 @@ public class WaiterService {
         return userMapper.WaiterEntityToWaiter(waiterRepository.findByUserId(userId));
     }
 
-    /**
-     * Returns the tenant owner for an admin or for one of that admin's waiters.
-     */
     public UserEntity getAdminForUser(UserEntity user) {
         if (user.getRole() == UserRole.ADMIN) {
             return user;
