@@ -34,4 +34,9 @@ public class ProductController {
     public void deleteProduct() {
         productService.deleteAll();
     }
+
+    @GetMapping("/table/{mesaId}")
+    public List<ResponseProductDTO> getProductsByTableId(@PathVariable Long mesaId){
+        return productService.getProductsByTableId(mesaId);
+    }
 }
