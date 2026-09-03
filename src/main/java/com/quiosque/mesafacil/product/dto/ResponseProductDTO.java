@@ -19,5 +19,6 @@ public class ResponseProductDTO {
     private Integer quantity;
     private ProductEnum status;
     private String WaiterName;
-    private Long createdById;
+    private Integer tableNumber;
+    private String titular;
 }
