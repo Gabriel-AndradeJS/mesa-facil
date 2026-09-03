@@ -77,4 +77,8 @@ public class TableService {
     public List<ResponseTableDTO> getAllTable(){
         return mesaRepository.findAll().stream().map(mesaMapper::entityToResponse).toList();
     }
+
+    public TableEntity getTableById(Long id){
+        return mesaRepository.findById(id).orElseThrow( () -> new RuntimeException("Table not found"));
+    }
 }
