@@ -1,23 +1,23 @@
 package com.quiosque.mesafacil.table.service;
 
-import com.quiosque.mesafacil.configs.JwtService;
 import com.quiosque.mesafacil.table.entity.TableEntity;
 import com.quiosque.mesafacil.table.enums.Status;
 import com.quiosque.mesafacil.table.repository.TableRepository;
 import com.quiosque.mesafacil.table.dtos.CreateTableDTO;
 import com.quiosque.mesafacil.table.dtos.ResponseTableDTO;
 import com.quiosque.mesafacil.table.mapper.TableMapper;
-import com.quiosque.mesafacil.user.dto.WaiterDTO;
 import com.quiosque.mesafacil.user.entity.UserEntity;
 import com.quiosque.mesafacil.user.repository.UserRepository;
 import com.quiosque.mesafacil.user.service.WaiterService;
-import com.quiosque.mesafacil.user.enums.UserRole;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @AllArgsConstructor
 @Service
@@ -25,7 +25,6 @@ public class TableService {
 
     private final TableRepository mesaRepository;
     private final TableMapper mesaMapper;
-    private final JwtService jwtService;
     private final WaiterService waiterService;
     private final UserRepository userRepository;
 
@@ -33,8 +32,13 @@ public class TableService {
     public ResponseEntity<ResponseTableDTO> createTable(CreateTableDTO createTableDTO, Long userId) {
         TableEntity mesa = new TableEntity();
 
-        TableEntity mesaExists = mesaRepository.findByNumber(createTableDTO.getNumber());
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
+        UserEntity admin = waiterService.getAdminForUser(user);
+        TableEntity mesaExists = mesaRepository
+                .findByNumberAndAdminId(createTableDTO.getNumber(), admin.getId())
+                .orElse(null);
 
         if (mesaExists != null && mesaExists.getStatus().equals(Status.ABERTO)) {
             throw new RuntimeException(
@@ -42,28 +46,9 @@ public class TableService {
             );
         }
 
-
-        UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
         mesa.setCreatedBy(user);
 
-        if (user.getRole() == UserRole.WAITER) {
-            WaiterDTO waiterDTO = waiterService.getWaiterUserById(user.getId());
-
-            if (waiterDTO == null) {
-                return ResponseEntity.badRequest().build();
-            }
-
-            UserEntity admin = userRepository.findById(waiterDTO.getAdminId())
-                    .orElseThrow(() -> new RuntimeException("Admin not found"));
-
-            mesa.setAdmin(admin);
-        } else if (user.getRole() == UserRole.ADMIN) {
-            mesa.setAdmin(user);
-        } else {
-            return ResponseEntity.badRequest().build();
-        }
+        mesa.setAdmin(admin);
 
         mesa.setNumber(createTableDTO.getNumber());
         mesa.setStatus(createTableDTO.getStatus());
@@ -74,11 +59,20 @@ public class TableService {
         return ResponseEntity.ok(mesaMapper.entityToResponse(mesa));
     }
 
-    public List<ResponseTableDTO> getAllTable(){
-        return mesaRepository.findAll().stream().map(mesaMapper::entityToResponse).toList();
+    public List<ResponseTableDTO> getAllTable(Long userId){
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Usuário não encontrado"));
+        Long adminId = waiterService.getAdminForUser(user).getId();
+        return mesaRepository.findAllByAdminId(adminId).stream()
+                .map(mesaMapper::entityToResponse)
+                .toList();
     }
 
-    public TableEntity getTableById(Long id){
-        return mesaRepository.findById(id).orElseThrow( () -> new RuntimeException("Table not found"));
+    public TableEntity getTableById(Long id, Long userId){
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Usuário não encontrado"));
+        Long adminId = waiterService.getAdminForUser(user).getId();
+        return mesaRepository.findByIdAndAdminId(id, adminId)
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Mesa não encontrada"));
     }
 }
