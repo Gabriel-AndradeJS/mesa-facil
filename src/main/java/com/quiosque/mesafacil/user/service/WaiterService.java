@@ -13,6 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 
 @Service
 public class WaiterService {
@@ -76,5 +79,23 @@ public class WaiterService {
 
     public WaiterDTO getWaitersUserId(Long userId){
         return userMapper.WaiterEntityToWaiter(waiterRepository.findByUserId(userId));
+    }
+
+    /**
+     * Returns the tenant owner for an admin or for one of that admin's waiters.
+     */
+    public UserEntity getAdminForUser(UserEntity user) {
+        if (user.getRole() == UserRole.ADMIN) {
+            return user;
+        }
+
+        if (user.getRole() == UserRole.WAITER) {
+            return waiterRepository.findOptionalByUserId(user.getId())
+                    .map(WaiterEntity::getAdmin)
+                    .orElseThrow(() -> new ResponseStatusException(
+                            FORBIDDEN, "Waiter não está vinculado a um administrador"));
+        }
+
+        throw new ResponseStatusException(FORBIDDEN, "Usuário sem acesso a este recurso");
     }
 }
