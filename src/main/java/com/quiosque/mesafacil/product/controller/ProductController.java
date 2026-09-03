@@ -31,12 +31,15 @@ public class ProductController {
     }
 
     @DeleteMapping
-    public void deleteProduct() {
-        productService.deleteAll();
+    public void deleteProduct(
+            @CurrentSecurityContext(expression = "authentication.principal") UserEntity user) {
+        productService.deleteAll(user.getId());
     }
 
     @GetMapping("/table/{mesaId}")
-    public List<ResponseProductDTO> getProductsByTableId(@PathVariable Long mesaId){
-        return productService.getProductsByTableId(mesaId);
+    public List<ResponseProductDTO> getProductsByTableId(
+            @PathVariable Long mesaId,
+            @CurrentSecurityContext(expression = "authentication.principal") UserEntity user){
+        return productService.getProductsByTableId(mesaId, user.getId());
     }
 }
