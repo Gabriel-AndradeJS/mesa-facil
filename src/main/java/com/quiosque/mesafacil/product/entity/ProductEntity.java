@@ -1,6 +1,7 @@
 package com.quiosque.mesafacil.product.entity;
 
 import com.quiosque.mesafacil.product.enums.ProductEnum;
+import com.quiosque.mesafacil.table.entity.TableEntity;
 import com.quiosque.mesafacil.user.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -45,9 +46,9 @@ public class ProductEntity {
     @JoinColumn(name = "admin_id", nullable = false)
     private UserEntity admin;
 
-    //@ManyToOne(fetch = FetchType.LAZY, optional = false)
-    //@JoinColumn(name = "mesa_id", nullable = false)
-    //private TableEntity mesaId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "mesa_id", nullable = false)
+    private TableEntity mesaId;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
