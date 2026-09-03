@@ -12,6 +12,9 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 import java.util.List;
 
@@ -53,6 +56,7 @@ public class UserService {
     }
 
     public UserEntity getUserById(Long id){
-        return userRepository.findById(id).orElseThrow( () -> new RuntimeException("User not found"));
+        return userRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(NOT_FOUND, "Usuário não encontrado"));
     }
 }
